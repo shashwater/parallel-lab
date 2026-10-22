@@ -33,11 +33,12 @@ At 1 KiB, star wins (0.15 ms vs ring 4.9 ms): ring pays 2(N-1) latency steps. Th
 Honest limit: loopback on 2 cores is not a network. The alpha-beta fit predicted the unseen 8-rank runs with 30-67% error
 (see `results/bench.json`), because 8 processes time-slice 2 cores. I use the fit to show the method, not to claim network numbers.
 
-**Planner vs Megatron-LM Table 1** (10 configs, 1.7B to 1T parameters, 32 to 3072 A100s). One scalar (GEMM efficiency 0.52)
-calibrated on the 3 smallest rows only. Predicted TFLOP/s per GPU on the other 7 rows: **12.8% mean absolute error, 18% max**
-(it under-predicts large models, since real GEMM efficiency rises with size and I hold it constant).
-Its top (tp, pp) pick equals the paper's on 3 of 10 configs (76B, 145B, 1T) and uses tp=8 for the large models like the paper.
-It differs on others, e.g. it prefers a smaller pipeline depth than the paper for 310B and 530B (my bubble/memory model is simpler).
+**Planner vs Megatron-LM Table 1** (10 configs, 1.7B to 1T parameters, 32 to 3072 A100s, published TFLOP/s per GPU).
+Protocol: fit on the 5 smallest models (<=39B), test on the 5 largest (76B to 1T, up to 26x bigger). No ZeRO, like the paper.
+- Baseline, 1 fitted number (constant GEMM efficiency 0.58): test error **5.3%**.
+- Final model, 3 fitted numbers (GEMM efficiency that grows with hidden size, a=0.64 and h0=1000; 75% of the data-parallel all-reduce hidden behind compute): train error 2.9%, **held-out test error 2.8%** (largest miss on the test set: 4.8%).
+- Strategy check: the paper's (tp, pp) is always memory-feasible in the planner and within **7.8%** of the planner's best modeled step time (0 to 0.9% for all models above 76B). The planner's own top pick equals the paper's on 3 of 10 configs; where it differs it usually picks a nearby tp or pp (for 310B it picks pp=12 vs the paper's 16). It is a screening tool, not a replacement for profiling.
+- Caveats: 3 parameters were fit on only 5 points, and Megatron's numbers include effects (interleaved schedules, kernel fusions) that this model lumps into the efficiency term.
 See `results/megatron_validation.json`.
 
 ## How it works (read this before an interview)
@@ -50,6 +51,6 @@ See `results/megatron_validation.json`.
 Questions you will get:
 - *Why is ring all-reduce bandwidth-optimal?* Every link is busy every step and total data per rank is 2(N-1)/N * S, which approaches 2S.
 - *Why did star beat ring on your box?* Loopback has no real link bottleneck and the machine has 2 cores; ring's extra steps and thread handoffs cost more than its bandwidth advantage. On a real network the ranking flips for large messages.
-- *How do you know the planner is any good?* Calibrated one scalar on three configs and compared to published throughput on seven others: 12.8% MAPE. It is a screening tool, not a replacement for profiling.
+- *How do you know the planner is any good?* I fit three numbers on the five smallest models in Megatron-LM's Table 1 and predicted the five largest (76B to 1T) within 2.8% on average. A constant-efficiency version is 5.3% off. I also checked that the paper's chosen parallel layout is within 7.8% of what my planner thinks is best.
 - *What does the planner ignore?* Overlap of communication with compute, interleaved pipeline schedules, sequence parallelism, network topology beyond two tiers, stragglers.
 - *Why do tp, dp, pp trade off?* tp: big comms but within NVLink; pp: bubble; dp: gradient all-reduce over the slower fabric and memory replication.
