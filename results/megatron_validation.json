@@ -1,0 +1,156 @@
+{
+ "gemm_eff": 0.52,
+ "rows": [
+  {
+   "params_B": 1.7,
+   "published": 137,
+   "predicted": 146.6,
+   "err_pct": 7.0,
+   "mem_gb": 26.8,
+   "published_tp_pp": [
+    1,
+    1
+   ],
+   "planner_best_tp_pp": [
+    1,
+    2
+   ]
+  },
+  {
+   "params_B": 3.6,
+   "published": 138,
+   "predicted": 137.8,
+   "err_pct": -0.1,
+   "mem_gb": 29.0,
+   "published_tp_pp": [
+    2,
+    1
+   ],
+   "planner_best_tp_pp": [
+    2,
+    2
+   ]
+  },
+  {
+   "params_B": 7.5,
+   "published": 142,
+   "predicted": 125.6,
+   "err_pct": -11.5,
+   "mem_gb": 30.5,
+   "published_tp_pp": [
+    4,
+    1
+   ],
+   "planner_best_tp_pp": [
+    2,
+    4
+   ]
+  },
+  {
+   "params_B": 18.4,
+   "published": 135,
+   "predicted": 117.5,
+   "err_pct": -13.0,
+   "mem_gb": 38.0,
+   "published_tp_pp": [
+    8,
+    1
+   ],
+   "planner_best_tp_pp": [
+    2,
+    8
+   ]
+  },
+  {
+   "params_B": 39.1,
+   "published": 138,
+   "predicted": 126.5,
+   "err_pct": -8.4,
+   "mem_gb": 40.8,
+   "published_tp_pp": [
+    8,
+    2
+   ],
+   "planner_best_tp_pp": [
+    4,
+    8
+   ]
+  },
+  {
+   "params_B": 76.1,
+   "published": 140,
+   "predicted": 129.1,
+   "err_pct": -7.8,
+   "mem_gb": 40.9,
+   "published_tp_pp": [
+    8,
+    4
+   ],
+   "planner_best_tp_pp": [
+    8,
+    4
+   ]
+  },
+  {
+   "params_B": 145.6,
+   "published": 148,
+   "predicted": 131.9,
+   "err_pct": -10.8,
+   "mem_gb": 41.3,
+   "published_tp_pp": [
+    8,
+    8
+   ],
+   "planner_best_tp_pp": [
+    8,
+    8
+   ]
+  },
+  {
+   "params_B": 310.1,
+   "published": 155,
+   "predicted": 133.3,
+   "err_pct": -14.0,
+   "mem_gb": 47.5,
+   "published_tp_pp": [
+    8,
+    16
+   ],
+   "planner_best_tp_pp": [
+    8,
+    12
+   ]
+  },
+  {
+   "params_B": 529.6,
+   "published": 163,
+   "predicted": 133.5,
+   "err_pct": -18.1,
+   "mem_gb": 45.3,
+   "published_tp_pp": [
+    8,
+    35
+   ],
+   "planner_best_tp_pp": [
+    8,
+    21
+   ]
+  },
+  {
+   "params_B": 1008.0,
+   "published": 163,
+   "predicted": 134.4,
+   "err_pct": -17.6,
+   "mem_gb": 59.2,
+   "published_tp_pp": [
+    8,
+    64
+   ],
+   "planner_best_tp_pp": [
+    8,
+    64
+   ]
+  }
+ ],
+ "heldout_mape": 0.1281272671967865
+}
