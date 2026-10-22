@@ -16,7 +16,8 @@ class Model:
 class Cluster:
     gpus: int; gpus_per_node: int = 8; mem_gb: float = 80.0
     peak_tflops: float = 312.0            # A100 fp16/bf16 dense peak
-    gemm_eff: float = 0.55                # fraction of peak a large GEMM sustains (calibrated scalar)
+    gemm_eff: float = 0.55                # asymptotic fraction of peak a GEMM sustains (calibrated)
+    eff_h0: float = 0.0                   # if >0: eff(h) = gemm_eff * h/(h+eff_h0), bigger hidden size -> bigger GEMMs -> higher efficiency
     intra_busbw: float = 230e9            # B/s NVLink all-reduce bus bandwidth per GPU
     inter_bw_per_gpu: float = 20e9        # B/s per GPU over the node fabric (8x200Gb IB / 8 GPUs, derated)
     alpha_intra: float = 10e-6; alpha_inter: float = 30e-6
@@ -53,7 +54,8 @@ def memory_gb(mo: Model, p: Plan):
 def evaluate(mo: Model, cl: Cluster, B: int, p: Plan, dp_overlap=0.0):
     N = p.dp * p.tp * p.pp
     flops = model_flops(mo, B, p.recompute)
-    compute = flops / (N * cl.peak_tflops * 1e12 * cl.gemm_eff)
+    eff = cl.gemm_eff * mo.hidden / (mo.hidden + cl.eff_h0) if cl.eff_h0 else cl.gemm_eff
+    compute = flops / (N * cl.peak_tflops * 1e12 * eff)
     bubble = compute * (p.pp - 1) / p.m
     msg = p.micro_b * mo.seq * mo.hidden * 2
     n_ar = 6 if p.recompute else 4
